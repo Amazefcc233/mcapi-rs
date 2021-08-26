@@ -1641,6 +1641,7 @@ dependencies = [
 [[package]]
 name = "redlock"
 version = "1.1.0"
+source = "git+https://github.com/Syfaro/redlock-rs#6199cc7ec4fb6f0f7debe4d82c66249bea87748e"
 dependencies = [
  "rand 0.8.4",
  "redis",
