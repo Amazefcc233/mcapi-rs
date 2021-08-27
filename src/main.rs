@@ -324,6 +324,15 @@ where
     Ok(data)
 }
 
+/// Ensure a port is something we should be attempting to connect to.
+fn validate_port(port: u16) -> Result<(), Error> {
+    if port < 1024 {
+        return Err(Error::InvalidPort(port));
+    }
+
+    Ok(())
+}
+
 /// Perform a server ping if not already cached, using default ages and
 /// timeouts.
 async fn get_ping(
@@ -333,6 +342,10 @@ async fn get_ping(
     host: String,
     port: u16,
 ) -> types::ServerPing {
+    if let Err(err) = validate_port(port) {
+        return err.into();
+    }
+
     get_cached_data(
         redis,
         redlock,
@@ -362,6 +375,10 @@ async fn get_query(
     host: String,
     port: u16,
 ) -> types::ServerQuery {
+    if let Err(err) = validate_port(port) {
+        return err.into();
+    }
+
     get_cached_data(
         redis,
         redlock,

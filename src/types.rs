@@ -7,6 +7,8 @@ pub enum Error {
     #[error("json error: {0}")]
     Json(#[from] serde_json::Error),
 
+    #[error("invalid port {0}")]
+    InvalidPort(u16),
     #[error("could not resolve host")]
     ResolveFailed,
     #[error("timeout: {0}")]
