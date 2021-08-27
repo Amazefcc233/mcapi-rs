@@ -16,6 +16,10 @@ pub enum Error {
     Number(#[from] std::num::ParseIntError),
     #[error("utf8 error: {0}")]
     Utf8(#[from] std::string::FromUtf8Error),
+    #[error("invalid varint")]
+    Varint,
+    #[error("packet too large")]
+    PacketTooLarge,
 }
 
 /// Encode a u32 into a VarInt.
@@ -35,7 +39,7 @@ fn encode_varint(num: u32) -> Vec<u8> {
 }
 
 /// Read a VarInt into a u32 from an AsyncRead type.
-async fn read_varint<T>(reader: &mut T) -> Result<u32, std::io::Error>
+async fn read_varint<T>(reader: &mut T) -> Result<u32, Error>
 where
     T: AsyncRead + Unpin,
 {
@@ -60,7 +64,7 @@ where
         index += 1;
         // If length is greater than 5, something is wrong
         if index > 5 {
-            break;
+            return Err(Error::Varint);
         }
 
         // If top bit was zero, we're done
@@ -195,8 +199,19 @@ pub async fn send_ping(addr: SocketAddr, host: &str, port: u16) -> Result<Ping, 
     let _packet_length = read_varint(&mut stream).await?;
     let _packet_id = read_varint(&mut stream).await?;
 
-    // Read the data length then read that much data into a vec.
+    // Read the data length and ensure it's of a reasonable size.
     let string_len = read_varint(&mut stream).await? as usize;
+    if string_len > 1024 * 1024 * 10 {
+        tracing::error!(
+            "rejecting ping packet from {}:{}, desired size is {}",
+            host,
+            port,
+            string_len
+        );
+        return Err(Error::PacketTooLarge);
+    }
+
+    // Attempt to allocate and read the packet.
     let mut data: Vec<u8> = vec![0; string_len];
     stream.read_exact(&mut data).await?;
 
