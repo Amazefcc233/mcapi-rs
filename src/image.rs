@@ -52,10 +52,10 @@ pub fn server_image(
 
     let title = if let Some(title) = &request.title {
         title.to_owned()
-    } else if let Some(port) = request.server_request.port {
-        format!("{}:{}", request.server_request.host, port)
+    } else if let Some(port) = request.port {
+        format!("{}:{}", request.host, port)
     } else {
-        request.server_request.host.to_owned()
+        request.host.to_owned()
     };
 
     draw_text_mut(&mut image, text_color, 68, 2, scale, &font, &title);

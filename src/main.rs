@@ -52,8 +52,9 @@ pub struct ServerRequest {
 
 #[derive(Debug, serde::Deserialize)]
 pub struct ServerImageRequest {
-    #[serde(flatten)]
-    pub server_request: ServerRequest,
+    #[serde(rename = "ip")]
+    pub host: String,
+    pub port: Option<u16>,
 
     pub title: Option<String>,
     pub theme: Option<image::Theme>,
@@ -108,22 +109,11 @@ async fn server_image(
 ) -> impl Responder {
     let _timer = REQUEST_DURATION.with_label_values(&["image"]).start_timer();
 
-    let port = req.server_request.port.unwrap_or(25565);
+    let port = req.port.unwrap_or(25565);
 
-    tracing::info!(
-        "attempting to get server image for {}:{}",
-        req.server_request.host,
-        port
-    );
+    tracing::info!("attempting to get server image for {}:{}", req.host, port);
 
-    let data = get_ping(
-        &redis,
-        &redlock,
-        &resolver,
-        req.server_request.host.clone(),
-        port,
-    )
-    .await;
+    let data = get_ping(&redis, &redlock, &resolver, req.host.clone(), port).await;
 
     let image = actix_web::rt::task::spawn_blocking(move || image::server_image(&req, data))
         .await
