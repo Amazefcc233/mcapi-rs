@@ -178,7 +178,7 @@ async fn main() -> std::io::Result<()> {
 
     tracing::info!("will listen on {}", listen);
 
-    let redis_servers = std::env::var("REDIS_SERVER").unwrap();
+    let redis_servers = std::env::var("REDIS_SERVER").expect("REDIS_SERVER is required");
     let redis_servers: Vec<_> = redis_servers.split(',').collect();
 
     let resolver = web::Data::new(Resolver::default());

@@ -116,7 +116,7 @@ fn build_handshake(host: &str, port: u16) -> Vec<u8> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Version {
     pub name: Option<String>,
-    pub protocol: u32,
+    pub protocol: i32,
 }
 
 /// A player on the server and their ID.
@@ -129,8 +129,8 @@ pub struct PlayerSample {
 /// Info about players on a server.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Players {
-    pub max: u32,
-    pub online: u32,
+    pub max: i32,
+    pub online: i32,
     /// A subset of the players on the server.
     pub sample: Option<Vec<PlayerSample>>,
 }

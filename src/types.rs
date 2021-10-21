@@ -26,15 +26,15 @@ pub trait Metadata {
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct ServerPingPlayers {
-    pub max: u32,
-    pub now: u32,
+    pub max: i32,
+    pub now: i32,
     pub sample: Vec<crate::protocol::PlayerSample>,
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct ServerPingServer {
     pub name: Option<String>,
-    pub protocol: u32,
+    pub protocol: i32,
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
