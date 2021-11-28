@@ -11,7 +11,7 @@ use actix_web::{
     web, App, HttpResponse, HttpServer, Responder,
 };
 use lazy_static::lazy_static;
-use prometheus::{register_histogram_vec, HistogramVec};
+use prometheus::{register_counter_vec, register_histogram_vec, CounterVec, HistogramVec};
 use redis::{AsyncCommands, Client as RedisClient};
 use redlock::RedLock;
 use tokio::time::timeout;
@@ -38,6 +38,18 @@ lazy_static! {
     static ref REQUEST_DURATION: HistogramVec = register_histogram_vec!(
         "mcapi_request_duration_seconds",
         "Total duration for a request",
+        &["method"]
+    )
+    .unwrap();
+    static ref SERVER_ONLINE: CounterVec = register_counter_vec!(
+        "mcapi_server_online_total",
+        "Number of servers that were online when checked",
+        &["method"]
+    )
+    .unwrap();
+    static ref SERVER_OFFLINE: CounterVec = register_counter_vec!(
+        "mcapi_server_offline_total",
+        "Number of servers that were offline when checked",
         &["method"]
     )
     .unwrap();
@@ -306,6 +318,12 @@ where
         .with_label_values(&[D::NAME])
         .observe(elapsed.as_secs_f64());
 
+    if data.is_online() {
+        SERVER_ONLINE.with_label_values(&[D::NAME]).inc();
+    } else {
+        SERVER_OFFLINE.with_label_values(&[D::NAME]).inc();
+    }
+
     let value = serde_json::to_vec(&data)?;
     con.set_ex::<_, _, ()>(key, value, 300).await?;
 
@@ -333,6 +351,7 @@ async fn get_ping(
     port: u16,
 ) -> types::ServerPing {
     if let Err(err) = validate_port(port) {
+        tracing::warn!("Got request for invalid port: {}", port);
         return err.into();
     }
 
@@ -366,6 +385,7 @@ async fn get_query(
     port: u16,
 ) -> types::ServerQuery {
     if let Err(err) = validate_port(port) {
+        tracing::warn!("Got request for invalid port: {}", port);
         return err.into();
     }
 

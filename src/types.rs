@@ -22,6 +22,7 @@ pub trait Metadata {
 
     fn updated_at(&self) -> u64;
     fn set_times(self, last_updated: u64, duration: u64) -> Self;
+    fn is_online(&self) -> bool;
 }
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
@@ -70,6 +71,10 @@ impl Metadata for ServerPing {
         self.duration = duration;
 
         self
+    }
+
+    fn is_online(&self) -> bool {
+        self.online
     }
 }
 
@@ -147,6 +152,10 @@ impl Metadata for ServerQuery {
         self.duration = duration;
 
         self
+    }
+
+    fn is_online(&self) -> bool {
+        self.online
     }
 }
 
