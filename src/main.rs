@@ -223,7 +223,7 @@ async fn main() -> std::io::Result<()> {
             .service(site)
             .route(
                 "/",
-                web::get().to(|| -> HttpResponse {
+                web::get().to(|| async {
                     HttpResponse::Ok().body(include_str!("../static/site/index.html"))
                 }),
             )

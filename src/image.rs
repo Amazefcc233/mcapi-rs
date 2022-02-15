@@ -99,11 +99,11 @@ pub fn server_image(
 pub fn server_icon(favicon: &Option<String>) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
     favicon
         .as_deref()
-        .map(|favicon| {
+        .and_then(|favicon| {
             // Some server seemed to be returning the base64 data with newlines
             // like it had been word wrapped in a text editor. We can replace
             // each newline with nothing to fix the issue.
-            let b64 = &favicon[22..].replace("\n", "");
+            let b64 = &favicon[22..].replace('\n', "");
 
             let data = match base64::decode(b64) {
                 Ok(data) => data,
@@ -121,7 +121,6 @@ pub fn server_icon(favicon: &Option<String>) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
                 }
             }
         })
-        .flatten()
         .unwrap_or_else(|| {
             let grass = Vec::from(include_bytes!("../static/assets/grass_sm.png") as &[u8]);
             image::load_from_memory(&grass).unwrap().into_rgba8()

@@ -272,9 +272,7 @@ where
 
     let mut buf = [0; 1];
     loop {
-        if reader.read_exact(&mut buf).await.is_err() {
-            return None;
-        }
+        reader.read_exact(&mut buf).await.as_ref().ok()?;
 
         match buf[0] {
             0x00 => break,
