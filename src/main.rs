@@ -21,7 +21,8 @@ use resolver::Resolver;
 use types::Error;
 
 const TIMEOUT_DURATION: Duration = Duration::from_secs(5);
-const MAX_AGE: u64 = 60 * 5;
+const MAX_AGE: u32 = 60 * 5;
+const MAX_STALE_AGE: u32 = 60;
 
 mod image;
 mod protocol;
@@ -237,8 +238,11 @@ async fn main() -> std::io::Result<()> {
 fn get_cache_control() -> CacheControl {
     CacheControl(vec![
         CacheDirective::Public,
-        CacheDirective::MaxAge(60),
-        CacheDirective::MaxStale(60),
+        CacheDirective::MaxAge(MAX_AGE as u32),
+        CacheDirective::Extension(
+            "stale-while-revalidate".to_string(),
+            Some(MAX_STALE_AGE.to_string()),
+        ),
     ])
 }
 
@@ -259,7 +263,7 @@ async fn get_cached_data<D, F, Fut>(
     redis: &RedisClient,
     locker: &RedLock,
     key: &str,
-    max_age: u64,
+    max_age: u32,
     f: F,
 ) -> Result<D, Error>
 where
@@ -274,7 +278,7 @@ where
         tracing::trace!("already had value for {} in cache", key);
         let data: D = serde_json::from_slice(&value)?;
 
-        if data.updated_at() >= unix_timestamp() - max_age {
+        if data.updated_at() >= unix_timestamp() - (max_age as u64) {
             tracing::trace!("data is fresh");
             return Ok(data);
         }
@@ -299,7 +303,7 @@ where
     if let Some(value) = con.get::<_, Option<Vec<u8>>>(key).await? {
         let data: D = serde_json::from_slice(&value)?;
 
-        if data.updated_at() >= unix_timestamp() - max_age {
+        if data.updated_at() >= unix_timestamp() - (max_age as u64) {
             tracing::debug!("data was already updated");
             locker.unlock(&lock).await;
             return Ok(data);
@@ -325,7 +329,7 @@ where
     }
 
     let value = serde_json::to_vec(&data)?;
-    con.set_ex::<_, _, ()>(key, value, 300).await?;
+    con.set_ex::<_, _, ()>(key, value, max_age as usize).await?;
 
     locker.unlock(&lock).await;
 
