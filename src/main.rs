@@ -56,11 +56,40 @@ lazy_static! {
     .unwrap();
 }
 
+trait ServerAddr {
+    fn host(&self) -> &str;
+    fn port(&self) -> Option<u16>;
+
+    fn parse_host(&self) -> (&str, u16) {
+        if let Some(port) = self.port() {
+            return (self.host(), port);
+        }
+
+        if let Some((host, port)) = self.host().split_once(':') {
+            if let Ok(port) = port.parse::<u16>() {
+                return (host, port);
+            }
+        }
+
+        return (self.host(), self.port().unwrap_or(25565));
+    }
+}
+
 #[derive(Debug, serde::Deserialize)]
 pub struct ServerRequest {
     #[serde(rename = "ip")]
     pub host: String,
     pub port: Option<u16>,
+}
+
+impl ServerAddr for ServerRequest {
+    fn host(&self) -> &str {
+        &self.host
+    }
+
+    fn port(&self) -> Option<u16> {
+        self.port
+    }
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -73,16 +102,26 @@ pub struct ServerImageRequest {
     pub theme: Option<image::Theme>,
 }
 
+impl ServerAddr for ServerImageRequest {
+    fn host(&self) -> &str {
+        &self.host
+    }
+
+    fn port(&self) -> Option<u16> {
+        self.port
+    }
+}
+
 #[get("/server/status")]
 async fn server_status(
     resolver: web::Data<Resolver>,
     redis: web::Data<RedisClient>,
     redlock: web::Data<RedLock>,
-    web::Query(ServerRequest { host, port }): web::Query<ServerRequest>,
+    web::Query(addr): web::Query<ServerRequest>,
 ) -> impl Responder {
     let _timer = REQUEST_DURATION.with_label_values(&["ping"]).start_timer();
 
-    let port = port.unwrap_or(25565);
+    let (host, port) = addr.parse_host();
 
     tracing::info!("attempting to get server status for {}:{}", host, port);
 
@@ -98,11 +137,11 @@ async fn server_query(
     resolver: web::Data<Resolver>,
     redis: web::Data<RedisClient>,
     redlock: web::Data<RedLock>,
-    web::Query(ServerRequest { host, port }): web::Query<ServerRequest>,
+    web::Query(addr): web::Query<ServerRequest>,
 ) -> impl Responder {
     let _timer = REQUEST_DURATION.with_label_values(&["query"]).start_timer();
 
-    let port = port.unwrap_or(25565);
+    let (host, port) = addr.parse_host();
 
     tracing::info!("attempting to get server query for {}:{}", host, port);
 
@@ -122,11 +161,11 @@ async fn server_image(
 ) -> impl Responder {
     let _timer = REQUEST_DURATION.with_label_values(&["image"]).start_timer();
 
-    let port = req.port.unwrap_or(25565);
+    let (host, port) = req.parse_host();
 
-    tracing::info!("attempting to get server image for {}:{}", req.host, port);
+    tracing::info!("attempting to get server image for {}:{}", host, port);
 
-    let data = get_ping(&redis, &redlock, &resolver, req.host.clone(), port).await;
+    let data = get_ping(&redis, &redlock, &resolver, host, port).await;
 
     let image = actix_web::rt::task::spawn_blocking(move || image::server_image(&req, data))
         .await
@@ -143,15 +182,15 @@ async fn server_icon(
     resolver: web::Data<Resolver>,
     redis: web::Data<RedisClient>,
     redlock: web::Data<RedLock>,
-    web::Query(ServerRequest { host, port }): web::Query<ServerRequest>,
+    web::Query(addr): web::Query<ServerRequest>,
 ) -> impl Responder {
     let _timer = REQUEST_DURATION.with_label_values(&["icon"]).start_timer();
 
-    let port = port.unwrap_or(25565);
+    let (host, port) = addr.parse_host();
 
     tracing::info!("attempting to get server icon for {}:{}", host, port);
 
-    let data = get_ping(&redis, &redlock, &resolver, host.clone(), port).await;
+    let data = get_ping(&redis, &redlock, &resolver, host, port).await;
 
     let icon = image::encode_png(image::server_icon(&data.favicon));
 
@@ -374,7 +413,7 @@ async fn get_ping(
     redis: &RedisClient,
     redlock: &RedLock,
     resolver: &Resolver,
-    host: String,
+    host: &str,
     port: u16,
 ) -> types::ServerPing {
     if let Err(err) = validate_port(port) {
@@ -389,11 +428,11 @@ async fn get_ping(
         MAX_AGE,
         || async {
             let addr = resolver
-                .lookup(host.clone(), port)
+                .lookup(host.to_owned(), port)
                 .await
                 .ok_or(Error::ResolveFailed)?;
 
-            let data = timeout(TIMEOUT_DURATION, protocol::send_ping(addr, &host, port)).await??;
+            let data = timeout(TIMEOUT_DURATION, protocol::send_ping(addr, host, port)).await??;
 
             Ok(types::ServerPing::from(data))
         },
@@ -408,7 +447,7 @@ async fn get_query(
     redis: &RedisClient,
     redlock: &RedLock,
     resolver: &Resolver,
-    host: String,
+    host: &str,
     port: u16,
 ) -> types::ServerQuery {
     if let Err(err) = validate_port(port) {
@@ -423,7 +462,7 @@ async fn get_query(
         MAX_AGE,
         || async {
             let addr = resolver
-                .lookup(host.clone(), port)
+                .lookup(host.to_owned(), port)
                 .await
                 .ok_or(Error::ResolveFailed)?;
 
