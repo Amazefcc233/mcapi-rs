@@ -208,12 +208,35 @@ async fn main() -> std::io::Result<()> {
         let scripts = actix_files::Files::new("/scripts", "./static/scripts").show_files_listing();
         let site = actix_files::Files::new("/site", "./static/site");
 
+        let query_cfg = actix_web::web::QueryConfig::default().error_handler(|err, _req| {
+            // Create a new error response with a JSON body. Allow caching the
+            // error for up to 1 hour, even though it should never change.
+            actix_web::error::InternalError::from_response(
+                err.to_string(),
+                HttpResponse::BadRequest()
+                    .append_header(CacheControl(vec![
+                        CacheDirective::Public,
+                        CacheDirective::MaxAge(60 * 60),
+                    ]))
+                    .content_type("application/json")
+                    .body(
+                        serde_json::json!({
+                            "status": "error",
+                            "error": err.to_string(),
+                        })
+                        .to_string(),
+                    ),
+            )
+            .into()
+        });
+
         App::new()
             .wrap(TracingLogger::default())
             .wrap(cors)
             .app_data(resolver.clone())
             .app_data(redis.clone())
             .app_data(redlock.clone())
+            .app_data(query_cfg)
             .service(server_status)
             .service(server_query)
             .service(server_image)
