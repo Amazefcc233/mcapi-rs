@@ -17,7 +17,7 @@ prometheus = { version = "0.13", features = ["process"] }
 tokio = { version = "1", features = ["net", "macros"] }
 futures-retry = "0.6"
 
-trust-dns-resolver = "0.20"
+trust-dns-resolver = "0.21"
 rand = "0.8"
 lru = "0.7"
 
