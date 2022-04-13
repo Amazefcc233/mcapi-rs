@@ -1,4 +1,4 @@
-use image::{ImageBuffer, Rgba, RgbaImage};
+use image::{ImageBuffer, ImageEncoder, Rgba, RgbaImage};
 use imageproc::{
     drawing::{draw_filled_rect_mut, draw_text_mut},
     rect::Rect,
@@ -90,7 +90,7 @@ pub fn server_image(
 
     let (x, y) = ((64 - favicon.width()) / 2, (64 - favicon.height()) / 2);
 
-    image::imageops::overlay(&mut image, &favicon, x, y);
+    image::imageops::overlay(&mut image, &favicon, x as i64, y as i64);
 
     encode_png(image)
 }
@@ -130,9 +130,9 @@ pub fn server_icon(favicon: &Option<String>) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
 /// Encode an image buffer into a PNG.
 pub fn encode_png(image: ImageBuffer<Rgba<u8>, Vec<u8>>) -> Vec<u8> {
     let mut buf: Vec<u8> = vec![];
-    let encoder = image::png::PngEncoder::new(&mut buf);
+    let encoder = image::codecs::png::PngEncoder::new(&mut buf);
     encoder
-        .encode(
+        .write_image(
             &image,
             image.width(),
             image.height(),
