@@ -3,14 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Minecraft API</title>
+    <title>Minecraft API - 大陆非官方站点</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description"
         content="A simple way to check the status of a Minecraft server and display the results along with numbers of players online on your website.">
     <meta name="theme-color" content="#6AFF42">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/4.0.0/journal/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-    <script>if (window.location.hostname === "api.syfaro.net") window.location = "https://mcapi.us";</script>
 
     <style>
         body {
@@ -40,11 +39,11 @@
             <div class="collapse navbar-collapse navbar-content">
                 <ul class="navbar-nav mr-auto">
                     <li class="navbar-item">
-                        <a class="nav-link" href="#home">Home</a>
+                        <a class="nav-link" href="#home">主页</a>
                     </li>
 
                     <li class="navbar-item">
-                        <a class="nav-link" href="#usage">Usage</a>
+                        <a class="nav-link" href="#usage">用法</a>
                     </li>
                 </ul>
             </div>
@@ -55,13 +54,13 @@
         <div class="container">
             <img src="/site/logo.png" srcset="/site/logo.png 1x, /site/logo@2x.png 2x" class="img-fluid">
 
-            <p class="lead">A simple way to get the status of or query a Minecraft server.</p>
+            <p class="lead">以一个简单的方式获取或查询您的Minecraft服务器。</p>
 
             <p>
-                Having issues? <a href="https://twitter.com/Syfaro">Tweet me</a> if anything is broken.
+                此为非官方站点，我们无法保证站点的稳定性，并且站点可能在以后会产生其他不可预知的问题。
             </p>
 
-            <p class="hidden-xs hidden-sm"><a class="btn btn-primary btn-lg" href="#usage">Get started</a></p>
+            <p class="hidden-xs hidden-sm"><a class="btn btn-primary btn-lg" href="#usage">开始使用</a></p>
         </div>
     </div>
 
@@ -75,47 +74,47 @@
         <div class="row">
             <div class="col-sm-12">
                 <p>
-                    All requests should be sent to <code>/server/status</code> or <code>/server/query</code>.
-                    You may add two parameters, an <code>ip</code> and a <code>port</code>.
-                    JSONP is not supported as CORS is enabled.
+                    (以下内容由可爱的<code>Google Translate</code>支持！原文请查看<a href="https://mcpai.us">官方站点>></a>)
+                </p>
+                <p>
+                    所有请求应发送到 <code>/server/status</code> 或 <code>/server/query</code>。
+                    您可以添加两个参数， <code>ip</code> 和 <code>port</code>。
+                    由于 CORS 已启用，因此不支持JSONP。
                 </p>
 
                 <p>
-                    Please do not send more than one request per client per minute as data is cached server side for a
-                    few minutes.
+                    请不要每分钟向每个客户发送1个以上的请求，因为数据会在服务器端缓存几分钟。
                 </p>
 
                 <p>
-                    An example request would look like <code>https://mcapi.us/server/status?ip=s.nerd.nu</code>. If you
-                    are
-                    using a non-standard 25565 port, you may include the port too, like this:
-                    <code>https://mcapi.us/server/status?ip=s.nerd.nu&port=25565</code>.
+                    一个请求示例看起来像这样 <code>https://mcapi.amazefcc233.com/server/status?ip=s.nerd.nu</code> 。
+                    如果您使用的是非标准的25565端口，则应添加端口参数。如下所示： <code>https://mcapi.amazefcc233.com/server/status?ip=s.nerd.nu&port=25565</code> 。
                 </p>
 
                 <p class="d-none d-sm-block">
-                    Alternatively, you can use our JavaScript library. Here's a small example of it in use.
+                    另外，您可以使用我们的JavaScript库。这是一个小使用例。
                 </p>
 
                 <pre class="d-none d-sm-block"><code class="html">&lt;div class="server-status"&gt;
-    My awesome server is currently &lt;span class="server-online"&gt;&lt;/span&gt;!
+    我最棒的mc服务器现在有 &lt;span class="server-online"&gt;&lt;/span&gt; 人在线哦！
 &lt;/div&gt;
 
-&lt;script src="https://mcapi.us/scripts/minecraft.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://mcapi.amazefcc233.com/scripts/minecraft.min.js"&gt;&lt;/script&gt;
 &lt;script&gt;
     MinecraftAPI.getServerStatus('s.nerd.nu', {
-        port: 25565 // optional, only if you need a custom port
+        port: 25565 // 可选，只在您需要输入自定义端口时必选
     }, function (err, status) {
         if (err) {
-            return document.querySelector('.server-status').innerHTML = 'Error loading status';
+            return document.querySelector('.server-status').innerHTML = '在加载状态时异常';
         }
 
-        // you can change these to your own message!
+        // 可以把这些改成你自己的消息！
         document.querySelector('.server-online').innerHTML = status.online ? 'up' : 'down';
     });
 &lt;/script&gt;</code></pre>
 
                 <p>
-                    A response from this might look the following (live response data):
+                    对此的响应可能如下所示 (实时响应数据):
                 </p>
 
                 <pre><code class="json" id="live-server-response"></code></pre>
@@ -124,86 +123,78 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th width="10%">name</th>
-                                <th>description</th>
-                                <th width="15%">example</th>
+                                <th width="10%">名称</th>
+                                <th>描述</th>
+                                <th width="15%">值对示例</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <th>status</th>
-                                <td>the status of the request, typically success unless a poor request is made or my
-                                    server is
-                                    having internal troubles. if this is not success, assume the data is bad and should
-                                    not be used.
+                                <td>请求的状态，通常是success，除非提供请求不正确或服务器出现内部故障。
+                                    如果不成功，则假定数据是错误的，不应使用。
                                 </td>
                                 <td>success</td>
                             </tr>
                             <tr>
                                 <th>online</th>
-                                <td>if the server is online or not</td>
+                                <td>服务器是否在线</td>
                                 <td>true</td>
                             </tr>
                             <tr>
                                 <th>motd</th>
-                                <td>the server description, also known as the message of the day. some strange
-                                    formatting may be in
-                                    this, there are various libraries available for formatting this.
+                                <td>服务器描述，也被称为每日信息。
+                                    某些奇怪的格式可能在其中，有多种库可用于格式化此格式。
                                 </td>
                                 <td>My Minecraft server</td>
                             </tr>
                             <tr>
                                 <th>error</th>
-                                <td>error message from the request. if you forget the IP the error will be
-                                    <code>missing data</code>.
-                                    if it is an invalid IP, the error will be <code>invalid hostname or port</code>. if
-                                    an error
-                                    starts with <code>internal server error</code>, it means something is wrong with my
-                                    server.
-                                    empty means no error.
+                                <td>来自请求错误的信息。如果没有填写ip，则会出现错误 <code>missing data</code>。
+                                    如果ip无效，则错误为 <code>invalid hostname or port</code>。
+                                    如果错误以 <code>internal server error</code> 开头，则表明是服务器内部错误。
+                                    为空则表示无错误。
+                                </td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <th>players.max</th>
-                                <td>number of players that the server will allow</td>
+                                <td>服务器允许的最大玩家数量</td>
                                 <td>20</td>
                             </tr>
                             <tr>
                                 <th>players.now</th>
-                                <td>number of players currently online</td>
+                                <td>当前在线的玩家数量</td>
                                 <td>2</td>
                             </tr>
                             <tr>
                                 <th>server.name</th>
-                                <td>current server version name</td>
+                                <td>当前服务器版本名称</td>
                                 <td>Spigot 1.8.3</td>
                             </tr>
                             <tr>
                                 <th>server.protocol</th>
-                                <td>server version protocol</td>
+                                <td>服务器版本协议</td>
                                 <td>47</td>
                             </tr>
                             <tr>
                                 <th>last_online</th>
-                                <td>the date the server was last recorded online. if empty, it has never been online. it
-                                    is a unix
-                                    timestamp in string form. if this has the same value as <code>last_updated</code>,
-                                    it means that
-                                    it is currently online.
+                                <td>服务器上次在线记录的日期。如果为空，则从未在线。
+                                    它是字符串形式的Unix时间戳。
+                                    如果该值与 <code>last_updated</code> 相同，则证明当前在线。
                                 </td>
                                 <td>1431985691</td>
                             </tr>
                             <tr>
                                 <th>last_updated</th>
-                                <td>the date the status of the server was last updated at. it updates every five
-                                    minutes, so you may
-                                    send requests as soon as it has expired.
+                                <td>服务器状态的最后更新日期。
+                                    它每五分钟更新一次，因此您可以在过期后立即发送请求。
                                 </td>
                                 <td>1431985691</td>
                             </tr>
                             <tr>
                                 <th>duration</th>
-                                <td>the time it took to process the original request, in nanoseconds.</td>
+                                <td>处理原始请求所花费的时间（以纳秒为单位）。</td>
                                 <td>143439400</td>
                             </tr>
                         </tbody>
@@ -211,16 +202,13 @@
                 </div>
 
                 <p>
-                    If you're looking for more information about the server, such as what plugins are installed or the
-                    name
-                    of the players currently online, you can try the <code>/server/query</code> endpoint instead. It
-                    takes
-                    the same parameters, and can be used with the provided JavaScript library by calling
-                    <code>MinecraftAPI.getServerQuery</code> instead.
+                    如果要查找有关服务器的更多信息，例如安装了哪些插件或当前在线的玩家名称，则可以尝试使用 <code>/server/query</code> 。
+                    它的参数与 <code>/server/status</code> 相同，并可以通过调用所提供的叫做
+                    <code>MinecraftAPI.getServerQuery</code> 的JavaScript库。
                 </p>
 
                 <p>
-                    However, query must be enabled on the server for this to work.
+                    但是，query必须在服务器上启用才能起作用。请在您服务器的<code>server.properties</code>中进行设置。
                 </p>
             </div>
         </div>
@@ -228,26 +216,23 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-center">
-                    <h2>Images</h2>
+                    <h2>图像</h2>
                 </div>
 
                 <p>
-                    Images can be used on a forum, etc. to show your server's status when you can't use JavaScript.
+                    当你不能使用JavaScript时，可以在论坛等地方使用图片来显示你的服务器的状态。
                 </p>
 
                 <p>
-                    Just add an image with the source <code>https://mcapi.us/server/image?ip=server_ip</code> to your
-                    post or site.
-                    If your server has an icon, it will use that. If not, it will show a standard grass block.
-                    Add <code>&port=25566</code> if you're using a non-standard port.
-                    If you have a dark background, you can add <code>&theme=dark</code> to the URL and it will make the
-                    text white instead.
-                    If you prefer to show a different title or IP, you can change the first line of text with
-                    <code>&title=YourMessage</code>.
+                    只需在您的帖子或网站上添加一个来源为 <code>https://mcapi.amazefcc233.com/server/image?ip=server_ip</code> 的图片即可。
+                    如果您的服务器有一个图标，它将使用该图标。如果不是，它将显示标准草方块。
+                    如果使用的是非标准端口，可添加参数 <code>&port=25566</code> 。
+                    如果背景为黑色，则可以添加 <code>&theme=dark</code> 到URL，它将使文本变为白色。
+                    如果您希望显示其他标题或IP，可以使用 <code>&title=YourMessage</code> 更改文本的第一行。
                 </p>
 
                 <p>
-                    Below is an example of the light and dark themes.
+                    以下是浅色和深色主题的示例。
                 </p>
 
                 <div class="row images text-center">
@@ -265,14 +250,12 @@
         <div class="row">
             <div class="col-sm-12 mt-5">
                 <p>
-                    If something doesn't work or you're interested in a new feature, mention me on
-                    <a href="https://twitter.com/Syfaro">Twitter</a> or <a href="mailto:syfaro@huefox.com">send me an
-                        email</a>.
+                    代码源自<a href="https://mcapi.amazefcc233.com">mcapi.amazefcc233.com</a>。部分内容进行过改进和汉化。<br>
+                    图像请求在白色主题下字体默认为蓝色。如需黑色字体，请添加 <code>&theme=truelight</code> 参数。
                 </p>
-
+    
                 <p>
-                    This site costs over $70 a year to run. Please consider helping at <a
-                        href="https://ko-fi.com/syfaro">ko-fi</a>.
+                    此站点接受无偿赞助。请<a href="https://afdian.net/@Amazefcc233">点击此处</a>以帮我们维持站点，亦可<a href="https://ko-fi.com/syfaro">点击此处(ko-fi)</a>支持原作者。
                 </p>
             </div>
         </div>
@@ -281,9 +264,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="/site/site.min.js"></script>
-
-    <script async defer data-website-id="a79f50a2-1d35-49cd-a239-9b7569b99668"
-        src="https://u.syfaro.com/umami.js"></script>
 </body>
 
 </html>

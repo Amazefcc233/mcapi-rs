@@ -10,6 +10,7 @@ use rusttype::{Font, Scale};
 #[serde(rename_all = "lowercase")]
 pub enum Theme {
     Light,
+    TrueLight,
     Dark,
 }
 
@@ -28,6 +29,10 @@ pub fn server_image(
     let (background_color, text_color) = match request.theme.unwrap_or_default() {
         Theme::Light => (
             Rgba([255u8, 255u8, 255u8, 255u8]),
+            Rgba([65u8, 105u8, 225u8, 255u8]),
+        ),
+        Theme::TrueLight => (
+            Rgba([255u8, 255u8, 255u8, 255u8]),
             Rgba([0u8, 0u8, 0u8, 255u8]),
         ),
         Theme::Dark => (
@@ -37,11 +42,14 @@ pub fn server_image(
     };
 
     let mut image = RgbaImage::new(325, 64);
+    // let mut image = RgbaImage::new(400, 64);
 
-    let font_data: &[u8] = include_bytes!("../static/assets/Inconsolata-Regular.ttf");
+    // let font_data: &[u8] = include_bytes!("../static/assets/Inconsolata-Regular.ttf");
+    let font_data: &[u8] = include_bytes!("../static/assets/msyh.ttc");
     let font: Font<'static> = Font::try_from_bytes(font_data).unwrap();
 
     let fill = Rect::at(0, 0).of_size(325, 64);
+    // let fill = Rect::at(0, 0).of_size(400, 64);
     draw_filled_rect_mut(&mut image, fill, background_color);
 
     let height = 16.0;
@@ -60,10 +68,15 @@ pub fn server_image(
 
     draw_text_mut(&mut image, text_color, 68, 2, scale, &font, &title);
 
+    // let status = if ping.online {
+    //     format!("Online! {}/{} players", ping.players.now, ping.players.max)
+    // } else {
+    //     "Offline".to_owned()
+    // };
     let status = if ping.online {
-        format!("Online! {}/{} players", ping.players.now, ping.players.max)
+        format!("在线! {}/{} 玩家", ping.players.now, ping.players.max)
     } else {
-        "Offline".to_owned()
+        "离线".to_owned()
     };
 
     draw_text_mut(&mut image, text_color, 68, 18, scale, &font, &status);
@@ -74,7 +87,8 @@ pub fn server_image(
         .as_secs();
     let mins = (now - ping.last_updated) / 60;
 
-    let updated = format!("Updated {} mins ago · mcapi.us", mins);
+    // let updated = format!("Updated {} mins ago · mcapi.us", mins);
+    let updated = format!("数据于 {} 分钟前更新 · 代码源自 mcapi.us", mins);
 
     draw_text_mut(
         &mut image,

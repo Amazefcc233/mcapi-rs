@@ -3,7 +3,7 @@
 
     var SyfaroAPI, MinecraftAPI, baseURL;
 
-    baseURL = 'https://mcapi.us';
+    baseURL = 'https://mcapi.amazefcc233.com';
 
     SyfaroAPI = (function () {
         /**
